@@ -52,6 +52,7 @@ function initializeClient() {
 
   client.on('ready', onReady);
   client.on('messageCreate', onMessageCreate);
+  client.on('interactionCreate', onInteractionCreate);
   client.on('error', onError);
   client.on('warn', onWarn);
 }
@@ -96,6 +97,29 @@ async function onMessageCreate(message) {
   }
 }
 
+async function onInteractionCreate(interaction) {
+  try {
+    if (!interaction.isButton()) return;
+
+    if (!interaction.deferred && !interaction.replied) {
+      await interaction.deferUpdate().catch(() => {});
+    }
+
+    const customId = interaction.customId;
+
+    if (customId === 'syednuke_confirm' || customId === 'syednuke_cancel') {
+      const syednukeCommand = commands.get('syednuke');
+      if (syednukeCommand && syednukeCommand.handleButtonInteraction) {
+        await syednukeCommand.handleButtonInteraction(interaction).catch((error) => {
+          logger.error(`Button interaction error: ${error.message}`);
+        });
+      }
+    }
+  } catch (error) {
+    logger.error(`Error in interactionCreate: ${error.message}`);
+  }
+}
+
 function onError(error) {
   logger.error(`Client error: ${error.message}`);
 }
@@ -103,6 +127,8 @@ function onError(error) {
 function onWarn(warning) {
   logger.warn(`Client warning: ${warning}`);
 }
+
+export { client };
 
 async function main() {
   logger.info('🚀 Starting SYEDNUKE Bot...');
