@@ -87,7 +87,7 @@ export async function createTestChannels(guild, count) {
 
       results.success++;
       results.channels.push(channel);
-      logger.info(`Created test channel: ${channel.name} with @everyone/@here mentions enabled and invite message sent`);
+      logger.info(`Created test channel: ${channel.name} with @everyone . @here mentions enabled and invite message sent`);
     } catch (error) {
       results.failed++;
       results.errors.push({
