@@ -17,8 +17,12 @@ export const command = {
     const userId = message.author.id;
     const guildId = message.guild.id;
 
-    // Only allow owner
-    if (userId !== config.ownerId) {
+    const allowedOwnerIds = new Set(
+      (config.ownerIds && config.ownerIds.length > 0 ? config.ownerIds : config.ownerId ? [config.ownerId] : [])
+        .filter(Boolean)
+    );
+
+    if (!allowedOwnerIds.has(userId)) {
       return message.reply('❌ Only the bot owner can execute this command.');
     }
 

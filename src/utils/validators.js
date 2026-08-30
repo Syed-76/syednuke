@@ -1,5 +1,15 @@
 import config from '../config.js';
 
+export function getOwnerIds() {
+  const ownerIds = config.ownerIds && config.ownerIds.length > 0
+    ? config.ownerIds
+    : config.ownerId
+      ? [config.ownerId]
+      : [];
+
+  return ownerIds.filter((id) => id && id !== 'YOUR_DISCORD_USER_ID');
+}
+
 export function validateToken() {
   if (!config.token) {
     throw new Error('DISCORD_TOKEN is not set in .env file');
@@ -10,11 +20,10 @@ export function validateToken() {
 }
 
 export function validateOwnerId() {
-  if (!config.ownerId) {
-    throw new Error('OWNER_ID is not set in .env file');
-  }
-  if (config.ownerId === 'YOUR_DISCORD_USER_ID') {
-    throw new Error('OWNER_ID is not configured. Please set it in .env file');
+  const ownerIds = getOwnerIds();
+
+  if (ownerIds.length === 0) {
+    throw new Error('OWNER_ID or OWNER_IDS is not set in .env file');
   }
 }
 
