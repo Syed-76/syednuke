@@ -19,6 +19,12 @@ export const command = {
             inline: false,
           },
           {
+            name: `${config.prefix}syednukeall`,
+            value:
+              '🔥 **OWNER ONLY** - Deletes ALL channels and roles. Use with extreme caution!',
+            inline: false,
+          },
+          {
             name: `${config.prefix}syedlink`,
             value:
               'Posts the configured server invite to all bot-created test channels.',

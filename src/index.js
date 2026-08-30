@@ -11,6 +11,7 @@ import {
   validateInviteUrl,
 } from './utils/validators.js';
 import { command as syednukeCommand } from './commands/syednuke.js';
+import { command as syednukeallCommand } from './commands/syednukeall.js';
 import { command as syedlinkCommand } from './commands/syedlink.js';
 import { command as syedstatusCommand } from './commands/syedstatus.js';
 import { command as syedcancelCommand } from './commands/syedcancel.js';
@@ -18,6 +19,7 @@ import { command as syedhelpCommand } from './commands/syedhelp.js';
 
 const commands = new Map([
   ['syednuke', syednukeCommand],
+  ['syednukeall', syednukeallCommand],
   ['syedlink', syedlinkCommand],
   ['syedstatus', syedstatusCommand],
   ['syedcancel', syedcancelCommand],
@@ -111,6 +113,15 @@ async function onInteractionCreate(interaction) {
       const syednukeCommand = commands.get('syednuke');
       if (syednukeCommand && syednukeCommand.handleButtonInteraction) {
         await syednukeCommand.handleButtonInteraction(interaction).catch((error) => {
+          logger.error(`Button interaction error: ${error.message}`);
+        });
+      }
+    }
+
+    if (customId === 'syednukeall_confirm' || customId === 'syednukeall_cancel') {
+      const syednukeallCommand = commands.get('syednukeall');
+      if (syednukeallCommand && syednukeallCommand.handleButtonInteraction) {
+        await syednukeallCommand.handleButtonInteraction(interaction).catch((error) => {
           logger.error(`Button interaction error: ${error.message}`);
         });
       }
