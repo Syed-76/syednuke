@@ -10,6 +10,15 @@ export function getOwnerIds() {
   return ownerIds.filter((id) => id && id !== 'YOUR_DISCORD_USER_ID');
 }
 
+export function isOwnerUser(userId) {
+  if (!userId) {
+    return false;
+  }
+
+  const ownerIds = getOwnerIds();
+  return ownerIds.includes(String(userId));
+}
+
 export function validateToken() {
   if (!config.token) {
     throw new Error('DISCORD_TOKEN is not set in .env file');

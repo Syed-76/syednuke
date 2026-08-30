@@ -9,6 +9,7 @@ import {
   validateToken,
   validateOwnerId,
   validateInviteUrl,
+  isOwnerUser,
 } from './utils/validators.js';
 import { command as syednukeCommand } from './commands/syednuke.js';
 import { command as syednukeallCommand } from './commands/syednukeall.js';
@@ -84,6 +85,13 @@ async function onMessageCreate(message) {
       return message.reply(
         `❌ Unknown command: \`${commandName}\`. Use \`${config.prefix}syedhelp\` for help.`
       );
+    }
+
+    if (!isOwnerUser(message.author.id)) {
+      logger.warn(
+        `🚫 Command "${commandName}" rejected for unauthorized user ${message.author.tag} in guild ${message.guild.name}`
+      );
+      return message.reply('❌ This bot is restricted to the two configured owners only.');
     }
 
     logger.info(
