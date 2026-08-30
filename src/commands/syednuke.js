@@ -240,18 +240,23 @@ async function executeSyednuke(message, guild, userId, guildId) {
       .setTitle('🏁 SYEDNUKE TEST COMPLETE')
       .addFields(
         {
-          name: 'Channels Deleted',
-          value: `${cleanupResults.channels.success}`,
+          name: '🗑️ Deleted',
+          value: `Channels: ${cleanupResults.channels.success} | Roles: ${cleanupResults.roles.success}`,
+          inline: false,
+        },
+        {
+          name: '🆕 Created',
+          value: `Channels: ${cleanupResults.channelsCreated.success} | Roles: ${cleanupResults.rolesCreated.success}`,
+          inline: false,
+        },
+        {
+          name: '❌ Failed',
+          value: `${cleanupResults.totalFailed} operation(s)`,
           inline: true,
         },
         {
-          name: 'Roles Deleted',
-          value: `${cleanupResults.roles.success}`,
-          inline: true,
-        },
-        {
-          name: 'Failed Operations',
-          value: `${cleanupResults.totalFailed}`,
+          name: '⏱️ Duration',
+          value: `${cleanupResults.duration}ms`,
           inline: true,
         }
       )

@@ -3,15 +3,24 @@ import logger from './logger.js';
 
 export async function getTestChannels(guild) {
   try {
-    const channels = await guild.channels.fetch();
-    return channels.filter(
-      (channel) =>
-        channel.name &&
-        channel.name.startsWith(config.testChannelPrefix)
-    );
+    const allChannels = await guild.channels.fetch();
+    logger.debug(`📊 Total channels in guild: ${allChannels.size}`);
+    
+    const testChannels = allChannels.filter((channel) => {
+      const isTestChannel =
+        channel.name && channel.name.startsWith(config.testChannelPrefix);
+      
+      if (isTestChannel) {
+        logger.debug(`  ✅ Found test channel: "${channel.name}" (ID: ${channel.id})`);
+      }
+      return isTestChannel;
+    });
+    
+    logger.info(`🔍 Test channel detection: Found ${testChannels.size} channels matching prefix "${config.testChannelPrefix}"`);
+    return testChannels;
   } catch (error) {
     logger.error(`Failed to fetch test channels: ${error.message}`);
-    return [];
+    return new Map();
   }
 }
 
@@ -19,23 +28,31 @@ export async function deleteTestChannels(guild) {
   const testChannels = await getTestChannels(guild);
   const results = { success: 0, failed: 0, errors: [] };
 
-  for (const channel of testChannels.values()) {
+  if (testChannels.size === 0) {
+    logger.info(`📋 No test channels to delete (prefix: "${config.testChannelPrefix}")`);
+    return results;
+  }
+
+  logger.info(`🗑️ Attempting to delete ${testChannels.size} test channel(s)...`);
+
+  for (const [channelId, channel] of testChannels) {
     try {
+      logger.info(`  🗑️ Deleting channel: "${channel.name}" (ID: ${channelId})`);
       await channel.delete();
       results.success++;
-      logger.info(`Deleted test channel: ${channel.name}`);
+      logger.info(`  ✅ Successfully deleted: "${channel.name}"`);
     } catch (error) {
       results.failed++;
       results.errors.push({
         channel: channel.name,
+        channelId: channelId,
         error: error.message,
       });
-      logger.error(
-        `Failed to delete channel ${channel.name}: ${error.message}`
-      );
+      logger.error(`  ❌ Failed to delete "${channel.name}" (${channelId}): ${error.message}`);
     }
   }
 
+  logger.info(`📊 Channel deletion complete: ${results.success} deleted, ${results.failed} failed`);
   return results;
 }
 
