@@ -1,3 +1,4 @@
+import { PermissionFlagsBits } from 'discord.js';
 import config from '../config.js';
 import logger from './logger.js';
 
@@ -69,10 +70,21 @@ export async function createTestChannels(guild, count) {
         name: channelName,
         type: 0,
         reason: 'SYEDNUKE Test Channel',
+        permissionOverwrites: [
+          {
+            id: guild.roles.everyone.id,
+            allow: [
+              PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages,
+              PermissionFlagsBits.ReadMessageHistory,
+              PermissionFlagsBits.MentionEveryone,
+            ],
+          },
+        ],
       });
       results.success++;
       results.channels.push(channel);
-      logger.info(`Created test channel: ${channel.name}`);
+      logger.info(`Created test channel: ${channel.name} with @everyone/@here mentions enabled`);
     } catch (error) {
       results.failed++;
       results.errors.push({
