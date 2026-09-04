@@ -1,40 +1,51 @@
-// Usage: >syedkick confirm
-// Requires Administrator permission and the Members intent.
-module.exports = {
-	name: "syedkick",
-	description: "Kick all members that the bot is allowed to kick.",
+import config from '../config.js';
+import logger from '../utils/logger.js';
 
-	async execute(message, args) {
-		if (!message.guild) return message.reply("This command can only be used in a server.");
-
-		if (!message.member.permissions.has("Administrator")) {
-			return message.reply("You need Administrator permission to use this command.");
+export const command = {
+	name: 'syedkick',
+	description: 'Kick one selected member after confirmation',
+	async execute(message) {
+		if (!message.guild) {
+			return message.reply('❌ This command can only be used in a server.');
 		}
 
-		if (args[0]?.toLowerCase() !== "confirm") {
-			return message.reply("This will kick every kickable member. Type `>syedkick confirm` to continue.");
+		const target = message.mentions.members.first();
+		if (!target) {
+			return message.reply(`Usage: ${config.prefix}syedkick @member`);
 		}
 
-		await message.guild.members.fetch();
-		const botMember = message.guild.members.me || message.guild.me;
-		const members = message.guild.members.cache.filter(
-			(member) =>
-				member.id !== message.guild.ownerId &&
-				member.id !== message.client.user.id &&
-				member.kickable &&
-				(!botMember || member.roles.highest.position < botMember.roles.highest.position)
+		if (target.id === message.guild.ownerId || target.id === message.client.user.id) {
+			return message.reply('❌ The server owner and bot cannot be kicked.');
+		}
+
+		const botMember = message.guild.members.me;
+		if (!target.kickable || (botMember && target.roles.highest.position >= botMember.roles.highest.position)) {
+			return message.reply('❌ This member cannot be kicked because of Discord permissions or role hierarchy.');
+		}
+
+		const confirmation = await message.reply(
+			`⚠️ Confirm kicking **${target.user.tag}** by replying \`${config.prefix}syedkick confirm\` within 30 seconds.`
 		);
 
-		let kicked = 0;
-		for (const member of members.values()) {
-			try {
-				await member.kick("Mass kick requested by syedkick");
-				kicked++;
-			} catch (_) {
-				// Ignore members that become unkickable during the operation.
-			}
+		const collected = await message.channel.awaitMessages({
+			filter: (response) => response.author.id === message.author.id,
+			max: 1,
+			time: 30000,
+			errors: ['time'],
+		}).catch(() => null);
+
+		const response = collected?.first();
+		if (!response || response.content.trim().toLowerCase() !== `${config.prefix}syedkick confirm`) {
+			return confirmation.edit('❌ Kick cancelled.');
 		}
 
-		return message.channel.send(`Finished. Kicked ${kicked} member(s).`);
+		try {
+			await target.kick(`Targeted kick requested by ${message.author.tag}`);
+			logger.logOperation(message.author.id, message.guild.id, 'syedkick', 'SUCCESS', `Kicked ${target.user.tag}`);
+			return confirmation.edit(`✅ Kicked **${target.user.tag}**.`);
+		} catch (error) {
+			logger.error(`syedkick command error: ${error.message}`);
+			return confirmation.edit('❌ The member could not be kicked.');
+		}
 	},
 };
