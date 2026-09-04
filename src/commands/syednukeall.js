@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 import config from '../config.js';
 import logger from '../utils/logger.js';
-import { performFullCleanup } from '../utils/cleanup.js';
+import { performFullNuke } from '../utils/nuke.js';
 
 const activeOperations = new Map();
 
@@ -207,7 +207,7 @@ async function handleTimeout(message, userId, guildId) {
 
 async function executeSyednukeallAsync(message, guild, userId, guildId) {
   // Fire and forget - do not await
-  performFullCleanup(guild)
+  performFullNuke(guild)
     .then(async (results) => {
       try {
         const resultEmbed = new EmbedBuilder()
