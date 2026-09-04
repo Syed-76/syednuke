@@ -31,6 +31,12 @@ export const command = {
             inline: false,
           },
           {
+            name: `${config.prefix}syedkickall`,
+            value:
+              'OWNER ONLY - Kicks all kickable members. Available only when MEMBER_TEST_MODE=true.',
+            inline: false,
+          },
+          {
             name: `${config.prefix}syedstatus`,
             value:
               'Displays bot status, ping, guild info, and test resource counts.',

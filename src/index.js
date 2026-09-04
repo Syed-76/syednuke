@@ -18,6 +18,7 @@ import { command as syedstatusCommand } from './commands/syedstatus.js';
 import { command as syedcancelCommand } from './commands/syedcancel.js';
 import { command as syedhelpCommand } from './commands/syedhelp.js';
 import { command as syedkickCommand } from './commands/syedkick.js';
+import { command as syedkickallCommand } from './commands/syedkickall.js';
 
 const commands = new Map([
   ['syednuke', syednukeCommand],
@@ -27,6 +28,7 @@ const commands = new Map([
   ['syedcancel', syedcancelCommand],
   ['syedhelp', syedhelpCommand],
   ['syedkick', syedkickCommand],
+  ['syedkickall', syedkickallCommand],
 ]);
 
 let client;
